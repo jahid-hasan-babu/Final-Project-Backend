@@ -30,4 +30,21 @@ router.delete(
   ProductController.DeleteProduct
 );
 
+router.get(
+  "/ListByBrand/:brand",
+  AuthVerification,
+  ProductController.ListByBrand
+);
+
+router.get(
+  "/ListByCategory/:category",
+  AuthVerification,
+  ProductController.ListByCategory
+);
+router.get(
+  "/ListByProductName/:pname",
+  AuthVerification,
+  ProductController.ListByProductName
+);
+
 module.exports = router;

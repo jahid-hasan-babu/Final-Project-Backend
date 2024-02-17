@@ -31,8 +31,47 @@ const DeleteProductServices = async (req) => {
   }
 };
 
+const ListByBrandService = async (req) => {
+  try {
+    let Brand = req.params.brand;
+    let MatchStage = { $match: { brand: Brand } };
+
+    let data = await ProductModel.aggregate([MatchStage]);
+    return { status: "success", data: data };
+  } catch (error) {
+    return { status: "fail", data: error }.toString();
+  }
+};
+
+const ListByCategoryService = async (req) => {
+  try {
+    let Category = req.params.category;
+    let MatchStage = { $match: { category: Category } };
+
+    let data = await ProductModel.aggregate([MatchStage]);
+    return { status: "success", data: data };
+  } catch (error) {
+    return { status: "fail", data: error }.toString();
+  }
+};
+
+const ListByProductNameService = async (req) => {
+  try {
+    let SearchRegex = { $regex: req.params.pname, $options: "i" };
+    let MatchStage = { $match: { pname: SearchRegex } };
+
+    let data = await ProductModel.aggregate([MatchStage]);
+    return { status: "success", data: data };
+  } catch (error) {
+    return { status: "fail", data: error }.toString();
+  }
+};
+
 module.exports = {
   CreateProductServices,
   UpdateProductServices,
   DeleteProductServices,
+  ListByBrandService,
+  ListByCategoryService,
+  ListByProductNameService,
 };
