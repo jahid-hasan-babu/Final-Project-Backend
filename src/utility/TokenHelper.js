@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 exports.EncodeToken = (email, user_id) => {
   let KEY = "JAHID-HASAN-BABU";
-  let EXPIRE = { expiresIn: "48h" };
+  let EXPIRE = { expiresIn: "12h" };
   let PAYLOAD = {
     email: email,
     user_id: user_id,
