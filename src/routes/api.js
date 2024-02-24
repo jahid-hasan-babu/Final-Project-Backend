@@ -9,18 +9,23 @@ router.post("/createUser", UserController.createUser);
 router.get("/verifyUser/:email/:otp", UserController.verifyUser);
 router.get("/LoginUser", UserController.LoginUser);
 router.get("/LogOutUser", AuthVerification, UserController.LogOutUser);
-router.put("/UpdateProfile", AuthVerification, UserController.UpdateProfile);
+router.get("/ReadProfile", UserController.ReadProfile);
+router.patch("/UpdateProfile", AuthVerification, UserController.UpdateProfile);
+
+//find email
+router.get("/checkEmail", UserController.checkEmailExists);
 
 //Product
 router.post(
   "/CreateProduct",
   AuthVerification,
+
   ProductController.CreateProduct
 );
 router.get("/ReadProduct", AuthVerification, ProductController.ReadProduct);
-router.put(
+router.patch(
   "/UpdateProduct/:id",
-  AuthVerification,
+
   ProductController.UpdateProduct
 );
 
@@ -28,6 +33,11 @@ router.delete(
   "/DeleteProduct/:id",
   AuthVerification,
   ProductController.DeleteProduct
+);
+router.get(
+  "/productListById/:id",
+  AuthVerification,
+  ProductController.productListById
 );
 
 router.get(

@@ -6,7 +6,7 @@ const { EncodeToken } = require("../utility/TokenHelper");
 const UserCreateServices = async (req) => {
   try {
     // Extract necessary fields from the request body
-    const { name, email, mobile, password, image } = req.body;
+    let { name, email, mobile, password, image } = req.body;
 
     // Generate OTP code
     const otpCode = Math.floor(100000 + Math.random() * 900000);
@@ -15,12 +15,15 @@ const UserCreateServices = async (req) => {
     await UserModel.findOneAndUpdate(
       { email: email },
       { $set: { otp: otpCode } },
-      { upsert: true }
+      { upsert: true } // Create new entry if email doesn't exist
     );
 
     // Access OTPModel _id
     const otpModelInstance = await UserModel.findOne({ email: email });
     const userID = otpModelInstance._id;
+
+    // Decode Base64 image data
+    image = Buffer.from(image, "base64");
 
     // Create UserModel with required fields including otpID
     await ProfileModel.create({
@@ -37,7 +40,7 @@ const UserCreateServices = async (req) => {
     const emailSub = `Verification code`;
     await sendEmailUtility(email, emailText, emailSub);
 
-    return { status: "success", message: "User create and otp send" };
+    return { status: "success", message: "User created and OTP sent" };
   } catch (e) {
     return { status: "fail", message: e.toString() };
   }
@@ -79,14 +82,11 @@ const UserVerifyServices = async (req) => {
 const UserLoginServices = async (req) => {
   try {
     // Extract email and password from request parameters
-    const email = req.body.email;
-    const password = req.body.password;
+    const email = req.query.email; // Assuming email is sent as a query parameter
+    const password = req.query.password;
 
     // Find user in the database with the provided email and password
-    const data = await ProfileModel.findOne({
-      email: email,
-      password: password,
-    });
+    const data = await ProfileModel.findOne({ email, password });
 
     const uModel = await UserModel.findOne().select("_id");
 
@@ -111,24 +111,25 @@ const UserLoginServices = async (req) => {
   }
 };
 
+const ReadProfileService = async (req) => {
+  try {
+    const user_id = req.headers.user_id;
+    let data = await ProfileModel.findOne({ userId: user_id });
+    return { status: "success", data: data };
+  } catch (e) {
+    return { status: "fail", message: e.toString() };
+  }
+};
+
 const SaveProfileService = async (req) => {
   try {
     const user_id = req.headers.user_id;
-
     const reqBody = req.body;
     reqBody.userID = user_id;
-
-    // Check if both password and image are provided
-    if (!reqBody.password || !reqBody.image) {
-      return { status: "fail", message: "Password and Image are required" };
-    }
-
-    // Update user password and image
     await ProfileModel.updateOne(
       { userID: user_id },
       { $set: { password: reqBody.password, image: reqBody.image } }
     );
-
     return { status: "success", message: "User updated successfully" };
   } catch (error) {
     return { status: "fail", message: error.toString() };
@@ -140,4 +141,5 @@ module.exports = {
   UserVerifyServices,
   UserLoginServices,
   SaveProfileService,
+  ReadProfileService,
 };

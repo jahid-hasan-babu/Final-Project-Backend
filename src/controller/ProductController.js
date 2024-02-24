@@ -5,25 +5,27 @@ const {
   ListByBrandService,
   ListByCategoryService,
   ListByProductNameService,
+  ReadProductList,
+  productListByIdServices,
 } = require("../services/ProductServices");
-const ProductModel = require("../model/ProductModel");
 
 exports.CreateProduct = async (req, res) => {
   let result = await CreateProductServices(req);
   res.status(201).json(result);
 };
 
-exports.ReadProduct = async (res) => {
-  try {
-    let result = await ProductModel.find();
-    res.status(200).json({ status: "success", data: result });
-  } catch (e) {
-    res.status(200).json({ status: "fail", data: e.toString() });
-  }
+exports.ReadProduct = async (req, res) => {
+  let result = await ReadProductList();
+  res.status(200).json(result);
 };
 
 exports.UpdateProduct = async (req, res) => {
   let result = await UpdateProductServices(req);
+  res.status(200).json(result);
+};
+
+exports.productListById = async (req, res) => {
+  let result = await productListByIdServices(req);
   res.status(200).json(result);
 };
 
