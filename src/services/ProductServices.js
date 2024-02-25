@@ -100,8 +100,8 @@ const ListByProductNameService = async (req) => {
     return { status: "fail", data: error }.toString();
   }
 };
-
-module.exports = {
+Frontend: //github.com/jahid-hasan-babu/Final-Project-Frontend;Backend:https://github.com/jahid-hasan-babu/Final-Project-Backend
+https: module.exports = {
   CreateProductServices,
   UpdateProductServices,
   DeleteProductServices,
