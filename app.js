@@ -37,7 +37,7 @@ mongoose
     console.log(err);
   });
 
-//Rata limiter
+//Rate limiter
 const limiter = rateLimit({
   windowMs: 24 * 60 * 1000,
   max: 1000,
