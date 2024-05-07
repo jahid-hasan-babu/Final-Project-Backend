@@ -6,7 +6,8 @@ require("dotenv").config();
 
 const cookieParser = require("cookie-parser");
 
-const URL = process.env.DATABASE_URL;
+const URL =
+  "mongodb+srv://jahidhasan:jahid246578@cluster0.u5gekv5.mongodb.net/FINAL-P";
 
 //security middleware
 const cors = require("cors");

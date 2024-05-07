@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 const smtpTransporter = require("nodemailer-smtp-transport");
 require("dotenv").config();
 
-let password = process.env.SMTP_PASS;
+let password = "hhqqbuzrkljidbxl";
 
 let sendEmailUtility = async (emailTo, emailText, emailSub) => {
   let transporter = nodemailer.createTransport(
