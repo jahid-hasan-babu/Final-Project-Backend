@@ -19,7 +19,13 @@ const xss = require("xss-clean");
 
 //Security middleware implement
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://final-project-frontend-omega.vercel.app"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    credentials: true, // If you're using cookies or sessions
+  })
+);
 app.use(helmet());
 app.use(xss());
 app.use(hpp());
