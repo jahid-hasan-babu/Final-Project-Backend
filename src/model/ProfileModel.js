@@ -53,7 +53,10 @@ const DataSchema = mongoose.Schema(
       },
       required: [true, "User password number required"],
     },
-    image: { type: String },
+    image: {
+      type: Object,
+      required: true,
+    },
     userID: { type: mongoose.Schema.Types.ObjectId, required: true },
   },
   { timestamps: true, versionKey: false }

@@ -2,47 +2,63 @@ const sendEmailUtility = require("../utility/EmailHelper");
 const ProfileModel = require("../model/ProfileModel");
 const UserModel = require("../model/UserModel");
 const { EncodeToken } = require("../utility/TokenHelper");
+const { cloudinary } = require("../utility/cloudinary");
 
 const UserCreateServices = async (req) => {
   try {
-    // Extract necessary fields from the request body
     let { name, email, mobile, password, image } = req.body;
+    let imageUrl = null;
+
+    // Upload image to Cloudinary if provided
+    if (image) {
+      const uploadRes = await cloudinary.uploader.upload(image, {
+        upload_preset: "addsImage",
+      });
+      if (!uploadRes || !uploadRes.secure_url) {
+        throw new Error("Image upload failed");
+      }
+      imageUrl = uploadRes.secure_url;
+    }
 
     // Generate OTP code
     const otpCode = Math.floor(100000 + Math.random() * 900000);
 
-    // Update OTPModel with email and OTP
+    // Update or create entry in UserModel with email and OTP
     await UserModel.findOneAndUpdate(
       { email: email },
       { $set: { otp: otpCode } },
-      { upsert: true } // Create new entry if email doesn't exist
+      { upsert: true }
     );
 
-    // Access OTPModel _id
+    // Retrieve UserModel _id
     const otpModelInstance = await UserModel.findOne({ email: email });
     const userID = otpModelInstance._id;
 
-    // Decode Base64 image data
-    image = Buffer.from(image, "base64");
-
-    // Create UserModel with required fields including otpID
-    await ProfileModel.create({
+    // Create ProfileModel instance with required fields
+    const profile = new ProfileModel({
       name,
       email,
       mobile,
       password,
-      image,
+      image: imageUrl,
       userID,
     });
+
+    // Save profile document
+    const savedProfile = await profile.save();
 
     // Send verification email
     const emailText = `Your Verification code is = ${otpCode}`;
     const emailSub = `Verification code`;
     await sendEmailUtility(email, emailText, emailSub);
 
-    return { status: "success", message: "User created and OTP sent" };
-  } catch (e) {
-    return { status: "fail", message: e.toString() };
+    return {
+      status: "success",
+      message: "User created and OTP sent",
+      data: savedProfile,
+    };
+  } catch (error) {
+    return { status: "fail", message: error.toString() };
   }
 };
 
